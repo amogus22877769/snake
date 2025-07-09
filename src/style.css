@@ -1,0 +1,17 @@
+#game-board {
+  width: 800px;
+  height: 600px;
+  background: green;
+}
+
+#snake-block {
+  width: 20px;
+  height: 20px;
+  background: gray;
+}
+
+#apple {
+  width: 20px;
+  height: 20px;
+  background: red;
+}
