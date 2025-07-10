@@ -1,0 +1,10 @@
+networks:
+  snake:
+
+services:
+  redis:
+    image: redis
+    networks:
+      - snake
+    ports:
+      - "6379:6379"
