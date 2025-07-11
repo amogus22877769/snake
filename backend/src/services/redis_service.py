@@ -1,5 +1,6 @@
 from pathlib import Path
 import asyncio
+import json
 
 from redis.asyncio import Redis
 from random import randint
@@ -35,7 +36,7 @@ class RedisService:
 
     async def move(self) -> None:
         print('Moving')
-        await self.move_script()
+        return json.loads(await self.move_script())
 
     async def add_apple(self) -> tuple[int, int, int]:
         random_left: int = randint(100, 1000)
@@ -51,7 +52,7 @@ class RedisService:
 if __name__ == '__main__':
     async def main():
         redis_service = RedisService()
-        print(await redis_service.add_apple())
-        # await redis_service.create_snake('maxim')
-        # await redis_service.move()
+        # print(await redis_service.add_apple())
+        await redis_service.create_snake('maxim')
+        print(await redis_service.move())
     asyncio.run(main())
