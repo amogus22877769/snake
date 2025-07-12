@@ -1,7 +1,11 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+
+from backend.src.pydantic_models.block import Block
+from backend.src.types.direction import Direction
+from backend.src.types.snake_name import SnakeName
+
 
 class Snake(BaseModel):
-    name: str = Field(pattern='[a-zA-Z]')
-
-if __name__ == '__main__':
-    Snake(name='maxim123')
+    name: SnakeName
+    blocks: list[Block]
+    direction: Direction

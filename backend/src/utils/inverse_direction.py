@@ -1,4 +1,4 @@
-from backend.src.types.types import Direction
+from backend.src.types.direction import Direction
 
 
 def inverse_direction(direction: Direction) -> Direction:

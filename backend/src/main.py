@@ -1,26 +1,13 @@
+import asyncio
+
 import uvicorn
-import socketio
 
-sio = socketio.AsyncServer(async_mode="asgi")
+from backend.src.services.redis_service import RedisService
+from backend.src.services.server_service import ServerService
+from backend.src.services.socketio_service import socket_app
 
-socket_app = socketio.ASGIApp(sio)
+config = uvicorn.Config(socket_app, host="127.0.0.1", port=5000, log_level="info")
+server = ServerService(config=config)
 
-
-@sio.event
-async def connect(sid, environ):
-    print(f"Клиент подключился: {sid}")
-    await sio.emit("message", {"data": "Вы подключены"}, room=sid)
-
-
-@sio.event
-async def disconnect(sid):
-    print(f"Клиент отключился: {sid}")
-
-
-@sio.event
-async def new_snake(sid, data):
-    pass
-
-
-if __name__ == "__main__":
-    uvicorn.run(socket_app, host="0.0.0.0", port=8000)
+with server.run_in_thread():
+    asyncio.run(RedisService().run_loop())
