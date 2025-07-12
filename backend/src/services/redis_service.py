@@ -66,6 +66,8 @@ class RedisService:
             raise ValueError("You cant go in the opposite direction")
         await self.r.set(f"snake:{snake_name}:direction", new_direction)
 
+    async def get_snapshot(self) -> Snapshot:
+
 
 if __name__ == "__main__":
 
