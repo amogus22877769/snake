@@ -1,42 +1,59 @@
-import Apple from './Apple';
-import Snake from './Snake';
-import './style.css'
+import Snake from "./Snake";
+import SnakePool from "./SnakePool";
+import { socket } from "./socket";
+import "./style.css";
+import type { DirectionType } from "./types";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>
-    <div
+    <div>
       Snake
     </div>
     <div id="game-board">
-      <div id="snake-block" class=" first" data-direction="right" data-number="1" style="position: absolute;top: 0px;left: 20px;"></div>
-      <div id="snake-block" class=" last" data-number="2" style="position: absolute;top: 0px;left: 0px;"></div>
     </div>
   </div>
-`
+`;
 
-    // <div id="snake-block" class=" first" data-direction="right" data-number="1" style="position: absolute;top: 0px;left: 200px;" />
-    // <div id="snake-block" class=" last" data-number="2" style="position: absolute;top: 0px;left: 0px;" />
-
-document.addEventListener('keydown', (event: KeyboardEvent) => {
-  const snake: Snake = new Snake()
-  switch (event.key.toLowerCase()) {
-    case 'w':
-      snake.changeDirection('up');
-      break;
-    case 'a':
-      snake.changeDirection('left');
-      break;
-    case 's':
-      snake.changeDirection('down');
-      break;
-    case 'd':
-      snake.changeDirection('right');
-      break;
+function generateAsciiUnderscoreString(length = 10) {
+  const chars = "abcdefghijklmnopqrstuvwxyz_";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
+  return result;
+}
+
+const snakeName = generateAsciiUnderscoreString();
+
+localStorage.setItem("snakeName", snakeName);
+
+console.log('Snake created at ', Date.now());
+
+socket.emit("new_snake", {
+  name: snakeName,
 });
 
-new Apple()
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  const snake: Snake = new Snake(localStorage.getItem("snakeName") as string);
+  let newDirection: DirectionType = "up";
+  switch (event.key.toLowerCase()) {
+    case "w":
+      newDirection = "up";
+      break;
+    case "a":
+      newDirection = "left";
+      break;
+    case "s":
+      newDirection = "down";
+      break;
+    case "d":
+      newDirection = "right";
+      break;
+  }
+  snake.changeDirection(newDirection);
+  socket.emit("change_direction", newDirection);
+});
 
-setInterval(() => {
-  new Snake().move()
-}, 100)
+setInterval((): void => {
+  new SnakePool().move();
+}, 100);

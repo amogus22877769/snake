@@ -1,7 +1,15 @@
-from pydantic import BaseModel
+import re
 
-from backend.src.types.snake_name import SnakeName
+from pydantic import BaseModel, field_validator
 
 
 class NewSnake(BaseModel):
-    name: SnakeName
+    name: str
+
+    @field_validator('name')
+    def validate_name(cls, v):
+        if not re.compile(r"^[a-z_]+$").fullmatch(v):
+            raise ValueError(
+                "Snake name can only contain lowercase letters and underscores"
+            )
+        return v

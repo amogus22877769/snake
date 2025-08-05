@@ -48,6 +48,8 @@ class RedisService:
         return self.r.register_script(script_content)
 
     async def create_snake(self, name: str, sid: str) -> tuple[Direction, int, int]:
+        if sid in await self.get_sids_script():
+            raise ValueError("You already have a snake")
         if await self.r.exists(f"snake:{name}:direction"):
             raise KeyError("Snake with such name already exists. Try another name")
         random_left: int = randint(100, 1000)
@@ -71,7 +73,7 @@ class RedisService:
         index: int = await self.add_apple_script(args=[random_left, random_top])
         return index, random_top, random_left
 
-    async def change_direction(self, sid: str, new_direction: Direction) -> None:
+    async def change_direction(self, sid: str, new_direction: Direction) -> str:
         snake_name: str = await self.get_snake_scrit(args=[sid])
         if not snake_name:
             raise ValueError('You dont have a snake')
@@ -81,6 +83,7 @@ class RedisService:
         if current_direction == inverse_direction(current_direction):
             raise ValueError("You cant go in the opposite direction")
         await self.r.set(f"snake:{snake_name}:direction", new_direction)
+        return snake_name
 
     async def get_snapshot(self) -> Snapshot:
         result: str = await self.get_snapshot_script()
@@ -92,12 +95,16 @@ class RedisService:
             raise ValueError("There is no snake with such sid")
         await self.delete_snake_script(sid)
 
-    async def run_loop(self):
+    async def get_number_of_snakes(self) -> int:
+        return len(self.r.keys('snake:*:direction'))
+
+    async def run_move_loop(self) -> None:
         while True:
             await asyncio.gather(
                 self.move_script(),
                 asyncio.sleep(0.1),
             )
+
 
 if __name__ == "__main__":
 
@@ -107,6 +114,6 @@ if __name__ == "__main__":
         # await redis_service.create_snake('maxim')
         # print(await redis_service.move())
         # print(await redis_service.get_snapshot())
-        await redis_service.run_loop()
+        await redis_service.run_move_loop()
 
     asyncio.run(main())

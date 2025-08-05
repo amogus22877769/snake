@@ -9,5 +9,6 @@ from backend.src.services.socketio_service import socket_app
 config = uvicorn.Config(socket_app, host="127.0.0.1", port=5000, log_level="info")
 server = ServerService(config=config)
 
-with server.run_in_thread():
-    asyncio.run(RedisService().run_loop())
+if __name__ == '__main__':
+    with server.run_in_thread():
+        asyncio.run(RedisService().run_move_loop())

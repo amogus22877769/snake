@@ -1,11 +1,8 @@
-from pydantic import BaseModel
-
 from backend.src.pydantic_models.block import Block
+from backend.src.pydantic_models.new_snake import NewSnake
 from backend.src.types.direction import Direction
-from backend.src.types.snake_name import SnakeName
 
 
-class Snake(BaseModel):
-    name: SnakeName
+class Snake(NewSnake):
     blocks: list[Block]
     direction: Direction
