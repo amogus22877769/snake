@@ -1,4 +1,5 @@
 import asyncio
+from datetime import time
 import json
 from typing import Any
 import socketio
@@ -37,6 +38,10 @@ async def add_apple():
 @sio.event
 async def connect(sid, environ):
     print(f"Клиент подключился: {sid}")
+    await asyncio.sleep(datetime.datetime.today())
+    snapshot: Snapshot = await redis_service.get_snapshot()
+    await sio.emit('snapshot', snapshot.model_dump_json())
+
 
 @sio.event
 async def disconnect(sid):

@@ -1,16 +1,18 @@
 from json import loads
 from pathlib import Path
 import asyncio
-
 from redis.asyncio import Redis
 from random import randint
+from datetime import datetime
 
 from redis.commands.core import AsyncScript
 
 from backend.src.pydantic_models.snapshot import Snapshot
 from backend.src.types.direction import Direction
+from backend.src.utils.get_millis_offset import get_millis_offset
 from backend.src.utils.inverse_direction import inverse_direction
 
+cycle_offset: int | None = None
 
 class RedisService:
     def __init__(self) -> None:
@@ -88,7 +90,7 @@ class RedisService:
     async def get_snapshot(self) -> Snapshot:
         result: str = await self.get_snapshot_script()
         parsed_result: dict = loads(result)
-        return Snapshot(**parsed_result)
+        return Snapshot(**parsed_result, creation_unix_time=time(), cycle_offset=cycle_offset)
 
     async def delete_snake(self, sid: str) -> None:
         if sid not in await self.get_sids_script():
@@ -99,11 +101,23 @@ class RedisService:
         return len(self.r.keys('snake:*:direction'))
 
     async def run_move_loop(self) -> None:
+        global cycle_offset
+        if cycle_offset is None:
+            cycle_offset = get_millis_offset()
+            print(f'{cycle_offset=}')
+        else:
+            raise BlockingIOError('Cant run 2 move loops simultaneously')
+        last_offset: int | None = None
         while True:
+            now = datetime.now()
+            start: float = now.microsecond % 100
+            print('Starting iteration at', now.microsecond)
             await asyncio.gather(
                 self.move_script(),
-                asyncio.sleep(0.1),
+                asyncio.sleep((now.microsecond - ((now.microsecond % 100) - cycle_offset) + 100) / 1000),
             )
+            end = datetime.now().microsecond
+            print('Ending itaration at', end, ', elapsed time', end - start, ', offset from ')
 
 
 if __name__ == "__main__":
