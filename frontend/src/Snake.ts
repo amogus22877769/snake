@@ -1,3 +1,5 @@
+import {socket} from "./socket.ts";
+
 type Direction = "up" | "down" | "left" | "right";
 
 export default class Snake {
@@ -13,7 +15,12 @@ export default class Snake {
       `#snake-block.last[data-name="${name}"]`,
     ) as HTMLDivElement;
   }
-  move(): void {
+  move(offset: number): void {
+    if (this.snakeFirstBlock.dataset.scheduledDirection !== undefined) {
+      this.changeDirection(this.snakeFirstBlock.dataset.scheduledDirection as Direction);
+      socket.emit("change_direction", {direction: this.snakeFirstBlock.dataset.scheduledDirection, offset: offset});
+      this.snakeFirstBlock.removeAttribute('data-scheduledDirection');
+    }
     const oldLastBlockTop: string = this.snakeLastBlock.style.top;
     const oldLastBlockLeft: string = this.snakeLastBlock.style.left;
     switch (this.snakeFirstBlock.dataset.direction) {
@@ -102,6 +109,23 @@ export default class Snake {
     if (this.isDead()) {
       this.delete();
     }
+  }
+  scheduleChangeDirection(direction: Direction): void {
+    switch (this.snakeFirstBlock.dataset.direction) {
+      case "up":
+        if (direction == "down") return;
+        break;
+      case "down":
+        if (direction == "up") return;
+        break;
+      case "left":
+        if (direction == "right") return;
+        break;
+      case "right":
+        if (direction == "left") return;
+        break;
+    }
+    this.snakeFirstBlock.dataset.scheduledDirection = direction;
   }
   changeDirection(direction: Direction): void {
     switch (this.snakeFirstBlock.dataset.direction) {

@@ -37,7 +37,7 @@ else
 end
 
 if #result_snakes == 0 then
-    result = result..'"snakes": [],'
+    result = result..'"snakes": []'
 else
     result = result..'"snakes": '
     result = result..cjson.encode(result_snakes)

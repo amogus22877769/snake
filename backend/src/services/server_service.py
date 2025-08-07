@@ -2,6 +2,7 @@ import contextlib
 import time
 import threading
 import uvicorn
+import asyncio
 
 class ServerService(uvicorn.Server):
     def install_signal_handlers(self):

@@ -12,7 +12,7 @@ export default class SnakePool {
   }
   move(): void {
     this.snakes.forEach((snake: Snake) => {
-      snake.move();
+      snake.move(Date.now());
     });
   }
 }
