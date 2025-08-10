@@ -10,6 +10,7 @@ import { buildApple, buildBoard, buildSnake } from "./builders";
 import Snake from "./Snake";
 import SnakePool from "./SnakePool.ts";
 import mountGameHandlers from "./mountGameHandlers.ts";
+import gameLoop from "./GameLoop.ts";
 
 export const socket = io("ws://localhost:5000");
 
@@ -34,16 +35,8 @@ socket.on("snapshot", (data: unknown) => {
       const jsonSnaphot = JSON.parse(data);
       const snapshot = SnapshotSchema.parse(jsonSnaphot);
       console.log(snapshot);
-      buildBoard(snapshot);
-      mountGameHandlers();
-      const snakePool = new SnakePool();
-      let iteration: number = 1;
-      function move(): void {
-        snakePool.move()
-        iteration += 1
-        setTimeout(move, snapshot.offset + iteration * 100 - Date.now())
-      }
-      setTimeout(move, snapshot.offset + iteration * 100 - Date.now())
+      gameLoop.init(snapshot);
+      gameLoop.run();
     } else {
       console.log("Recieved data is not type string");
     }

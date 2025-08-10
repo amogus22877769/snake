@@ -10,9 +10,21 @@ export default class SnakePool {
       this.snakes.push(new Snake(firstBlock.dataset.name as string));
     }
   }
-  move(): void {
+  getSnake(name: string): Snake {
+    for (const snake of this.snakes) {
+      if (snake.snakeFirstBlock.dataset.name === name) {
+        return snake;
+      }
+    }
+    throw Error("There is no snake with such name");
+  }
+  clear(): void {
+    this.snakes = this.snakes.filter((snake) => !snake.deleted);
+  }
+  move(offset: number): void {
+    this.clear();
     this.snakes.forEach((snake: Snake) => {
-      snake.move(Date.now());
+      snake.freezeFor ? snake.freezeFor -= 1 : snake.move(offset);
     });
   }
 }

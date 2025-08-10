@@ -1,4 +1,4 @@
-import {socket} from "./socket.ts";
+import { socket } from "./socket.ts";
 
 type Direction = "up" | "down" | "left" | "right";
 
@@ -6,7 +6,9 @@ export default class Snake {
   snakeFirstBlock: HTMLDivElement;
   snakeLastBlock: HTMLDivElement;
   name: string;
-  constructor(name: string) {
+  deleted: boolean;
+  freezeFor: number;
+  constructor(name: string, freezeFor: number = 0) {
     this.name = name;
     this.snakeFirstBlock = document.querySelector<HTMLDivElement>(
       `#snake-block.first[data-name="${name}"]`,
@@ -14,12 +16,21 @@ export default class Snake {
     this.snakeLastBlock = document.querySelector<HTMLDivElement>(
       `#snake-block.last[data-name="${name}"]`,
     ) as HTMLDivElement;
+    this.deleted = false;
+    this.freezeFor = freezeFor;
   }
   move(offset: number): void {
     if (this.snakeFirstBlock.dataset.scheduledDirection !== undefined) {
-      this.changeDirection(this.snakeFirstBlock.dataset.scheduledDirection as Direction);
-      socket.emit("change_direction", {direction: this.snakeFirstBlock.dataset.scheduledDirection, offset: offset});
-      this.snakeFirstBlock.removeAttribute('data-scheduledDirection');
+      this.changeDirection(
+        this.snakeFirstBlock.dataset.scheduledDirection as Direction,
+      );
+      
+      socket.emit("change_direction", {
+        direction: this.snakeFirstBlock.dataset.scheduledDirection,
+        offset: offset,
+      });
+      
+      this.snakeFirstBlock.removeAttribute("data-scheduledDirection");
     }
     const oldLastBlockTop: string = this.snakeLastBlock.style.top;
     const oldLastBlockLeft: string = this.snakeLastBlock.style.left;
@@ -169,10 +180,14 @@ export default class Snake {
     return isDead;
   }
   private delete(): void {
+    if (localStorage.getItem("snakeName") === this.name) {
+      localStorage.removeItem(this.name);
+    }
     document
       .querySelectorAll<HTMLDivElement>(`[data-name="${this.name}"]`)
       .forEach((block: HTMLDivElement) => {
         block.remove();
       });
+    this.deleted = true;
   }
 }

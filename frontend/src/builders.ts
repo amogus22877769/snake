@@ -56,3 +56,4 @@ function buildSnake(snake: SnakeType) {
 }
 
 export { buildBoard, buildApple, buildSnake };
+

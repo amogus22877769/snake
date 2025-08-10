@@ -17,50 +17,25 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   </div>
 `;
 
-let name: string = ''
+let name: string = "";
 
-document.getElementById('snake-name')?.addEventListener('input', (e: Event): void => {
-  const inputElement = e.target as HTMLInputElement;
-  name = inputElement.value;
-  if (!/^[a-z_]+$/.test(name)) {
-    document.getElementById('input-error')!.innerText = 'Snake name must only contain lowercase english letters and underscores';
-    (document.getElementById('play') as HTMLButtonElement).disabled = true;
-  } else {
-    document.getElementById('input-error')!.innerText = '';
-    (document.getElementById('play') as HTMLButtonElement).disabled = false;
-  }
+document
+  .getElementById("snake-name")
+  ?.addEventListener("input", (e: Event): void => {
+    const inputElement = e.target as HTMLInputElement;
+    name = inputElement.value;
+    if (!/^[a-z_]+$/.test(name)) {
+      document.getElementById("input-error")!.innerText =
+        "Snake name must only contain lowercase english letters and underscores";
+      (document.getElementById("play") as HTMLButtonElement).disabled = true;
+    } else {
+      document.getElementById("input-error")!.innerText = "";
+      (document.getElementById("play") as HTMLButtonElement).disabled = false;
+    }
+  });
+
+document.getElementById("play")?.addEventListener("click", (): void => {
+  console.log("Play!");
+  socket.emit("new_snake", { name: name });
+  localStorage.setItem("snakeName", name);
 });
-
-document.getElementById('play')?.addEventListener('click', (): void => {
-  console.log('Play!')
-  socket.emit('new_snake', {name: name});
-  localStorage.setItem('snakeName', name);
-})
-
-// socket.emit("new_snake", {
-//   name: snakeName,
-// });
-
-document.addEventListener("keydown", (event: KeyboardEvent) => {
-  const snake: Snake = new Snake(localStorage.getItem("snakeName") as string);
-  let newDirection: DirectionType = "up";
-  switch (event.key.toLowerCase()) {
-    case "w":
-      newDirection = "up";
-      break;
-    case "a":
-      newDirection = "left";
-      break;
-    case "s":
-      newDirection = "down";
-      break;
-    case "d":
-      newDirection = "right";
-      break;
-  }
-  snake.scheduleChangeDirection(newDirection);
-});
-
-// setInterval((): void => {
-//   new SnakePool().move();
-// }, 100);

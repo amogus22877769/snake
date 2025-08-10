@@ -59,18 +59,26 @@ const SnakeSchema = z
     },
   );
 
-const SnapshotSchema = z.object({
-  offset: z.number(),
-  snakes: z.array(SnakeSchema),
-  apples: z.array(AppleSchema),
-}).refine((val) => {
+const SnapshotSchema = z
+  .object({
+    offset: z.number(),
+    snakes: z.array(SnakeSchema),
+    apples: z.array(AppleSchema),
+  })
+  .refine((val) => {
     return Date.now() - val.offset < 100;
-});
+  });
 
 const NewDirectionSchema = z.object({
   name: SnakeNameSchema,
   direction: DirectionSchema,
   offset: z.number().optional(),
+});
+
+const NewClientSnakeSchema = SnakeSchema.extend({
+  offset: z.number().refine((val) => {
+    return Date.now() - val < 100;
+  }),
 });
 
 export {
@@ -80,4 +88,5 @@ export {
   SnakeSchema,
   SnapshotSchema,
   NewDirectionSchema,
+  NewClientSnakeSchema,
 };
