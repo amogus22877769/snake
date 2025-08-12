@@ -1,4 +1,5 @@
 import { buildBoard } from "./builders";
+import config from "./config";
 import mountGameHandlers from "./mountGameHandlers";
 import SnakePool from "./SnakePool";
 import type { SnapshotType } from "./types";
@@ -19,9 +20,9 @@ class GameLoop {
   run(): void {
     let iteration: number = 1;
     const move = (): void => {
-      if (Date.now() - (this.offset as number) - iteration * 100 >= 0) {
-        console.log('Error', Date.now() - (this.offset as number) - iteration * 100);
-        (this.snakePool as SnakePool).move((this.offset as number) + iteration * 100);
+      if (Date.now() - (this.offset as number) - iteration * config.CYCLE_FREQUENCY >= 0) {
+        console.log('Error', Date.now() - (this.offset as number) - iteration * config.CYCLE_FREQUENCY);
+        (this.snakePool as SnakePool).move((this.offset as number) + iteration * config.CYCLE_FREQUENCY);
         iteration += 1;
       }
       requestAnimationFrame(move);

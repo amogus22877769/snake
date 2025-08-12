@@ -10,6 +10,7 @@ from datetime import datetime
 
 from redis.commands.core import AsyncScript
 
+from backend.src.config import config
 from backend.src.pydantic_models.snapshot import Snapshot
 from backend.src.types.direction import Direction
 from backend.src.utils.get_millis import get_millis
@@ -116,10 +117,10 @@ class RedisService:
         iteration: int = 1
         while True:
             await self.move_script()
-            self.cycle_offset = offset + (iteration - 1) * 100
+            self.cycle_offset = offset + (iteration - 1) * config.CYCLE_FREQUENCY
             while self.event_queue:
                 await self.event_queue.popleft()
-            estimated_end: int = self.cycle_offset + 100
+            estimated_end: int = self.cycle_offset + config.CYCLE_FREQUENCY
             await sleep(
                 max((estimated_end - get_millis()) / 1000, 0)
             )

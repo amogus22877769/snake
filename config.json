@@ -1,3 +1,7 @@
 {
-  "BOARD": 1
+  "CYCLE_FREQUENCY": 100,
+  "BOARD_LEFT": 0,
+  "BOARD_TOP": 0,
+  "BOARD_WIDTH": 700,
+  "BOARD_HEIGHT": 700
 }

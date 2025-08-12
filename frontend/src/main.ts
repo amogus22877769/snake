@@ -3,7 +3,10 @@ import Snake from "./Snake";
 import SnakePool from "./SnakePool";
 import { socket } from "./socket";
 import "./style.css";
+import config from "./config";
 import type { DirectionType } from "./types";
+
+console.log(config);
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>

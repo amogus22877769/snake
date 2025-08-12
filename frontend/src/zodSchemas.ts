@@ -81,6 +81,14 @@ const NewClientSnakeSchema = SnakeSchema.extend({
   }),
 });
 
+const ConfigSchema = z.object({
+  CYCLE_FREQUENCY: z.number(),
+  BOARD_LEFT: z.number(),
+  BOARD_TOP: z.number(),
+  BOARD_WIDTH: z.number(),
+  BOARD_HEIGHT: z.number(),
+});
+
 export {
   DirectionSchema,
   BlockSchema,
@@ -89,4 +97,5 @@ export {
   SnapshotSchema,
   NewDirectionSchema,
   NewClientSnakeSchema,
+  ConfigSchema,
 };

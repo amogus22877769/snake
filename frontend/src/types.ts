@@ -2,6 +2,7 @@ import type z from "zod";
 import type {
   AppleSchema,
   BlockSchema,
+  ConfigSchema,
   DirectionSchema,
   NewDirectionSchema,
   SnakeSchema,
@@ -20,6 +21,8 @@ type SnapshotType = z.infer<typeof SnapshotSchema>;
 
 type NewDirectionType = z.infer<typeof NewDirectionSchema>;
 
+type ConfigType = z.infer<typeof ConfigSchema>;
+
 export type {
   DirectionType,
   AppleType,
@@ -27,4 +30,5 @@ export type {
   SnakeType,
   SnapshotType,
   NewDirectionType,
+  ConfigType,
 };
